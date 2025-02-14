@@ -87,10 +87,10 @@ const MyAudiobooks = () => {
       setFilteredBooks((prevBooks) =>
         prevBooks.filter((book) => book.id !== bookId)
       );
-      alert("Audiobook deleted successfully!");
+      toast("Audiobook deleted successfully!");
     } catch (error) {
       console.error("Failed to delete audiobook:", error);
-      alert("Failed to delete audiobook. Please try again.");
+      toast("Failed to delete audiobook. Please try again.");
     }
   };
 
