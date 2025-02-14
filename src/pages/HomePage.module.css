@@ -1,0 +1,43 @@
+/* HomePage.module.css */
+
+.homePageContainer {
+  display: flex;
+  flex-direction: row; /* Default, but be explicit */
+  min-height: 100vh;
+  width: 100%; /* Take full width */
+  position: relative; /* For absolute positioning of sidebar */
+  padding-top: 80px; /* Adjust this value based on your navbar height */
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100vh;
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.sidebar.active {
+  transform: translateX(0);
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  margin-right: 0; /* Reset margin */
+  transition: margin-left 0.3s ease-in-out; /* Change to margin-left for content shift */
+}
+
+/* Add this, since we push content out */
+.content.sidebarOpen {
+  margin-left: 300px; /* Shift content to make space for the sidebar */
+  margin-right: 0; /* Ensure content aligns to left */
+}
