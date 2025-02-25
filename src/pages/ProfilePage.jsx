@@ -10,7 +10,7 @@ import MyAudiobooks from "../components/authors/MyAudiobooks";
 
 const ProfilePage = ({ isAuthor }) => {
   // console.log("isAuthor in ProfilePage:", isAuthor); // Add this line
-  console.log(`%c hmm author loggged anta mari...`, "color:green");
+  // console.log(`%c hmm author loggged anta mari...`, "color:green");
 
   return (
     <div className="mx-16">

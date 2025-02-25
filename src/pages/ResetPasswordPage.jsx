@@ -234,7 +234,7 @@ const ResetPasswordPage = ({ isAuthor }) => {
             password: values.password,
           }).unwrap();
 
-      console.log("Success Ayyindi mawa 😊", result);
+      // console.log("Success Ayyindi mawa 😊", result);
       toast.success("Password reset successful! Redirecting to login...");
       resetForm();
 

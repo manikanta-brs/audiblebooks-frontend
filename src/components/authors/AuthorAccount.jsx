@@ -77,7 +77,7 @@ const AuthorAccount = ({ isAuthor }) => {
     }
   }, [isAuthor, reduxUserData, loading]);
 
-  console.log(`%c hmm redux data getting amma mari....`, "color: red");
+  // console.log(`%c hmm redux data getting amma mari....`, "color: red");
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -102,7 +102,7 @@ const AuthorAccount = ({ isAuthor }) => {
       }
 
       // console.log("API Response:", response); // Added: Check API Response
-      console.log(`%c response is coming anta mari`, "color:yellow");
+      // console.log(`%c response is coming anta mari`, "color:yellow");
 
       if (isAuthor) {
         dispatch(

@@ -113,7 +113,7 @@ const UploadBooks = () => {
           }
 
           const result = await uploadAudiobook(formData).unwrap();
-          console.log("Upload successful:", result);
+          // console.log("Upload successful:", result);
           toast.success("Upload successful!");
           resetForm();
           setBookCover(null);

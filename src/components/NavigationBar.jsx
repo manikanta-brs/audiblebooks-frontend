@@ -444,7 +444,7 @@ const NavigationBar = () => {
 
   useEffect(() => {
     // console.log("userData in NavigationBar:", userData); // Added: Log userData
-    console.log(`%c User data vasthundi anta ...`, "color: #00ff00;");
+    // console.log(`%c User data vasthundi anta ...`, "color: #00ff00;");
   }, [userData]);
 
   return (

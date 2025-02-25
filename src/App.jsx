@@ -43,7 +43,7 @@ const App = () => {
 
   const handleBookSelect = (book) => {
     // console.log("Book selected:", book);
-    console.log(`%c inkenti mawa mari audio book vinu.... `, "color:#00ff00");
+    // console.log(`%c inkenti mawa mari audio book vinu.... `, "color:#00ff00");
     setSelectedAudiobook(book);
   };
 
