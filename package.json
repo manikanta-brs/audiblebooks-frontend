@@ -15,6 +15,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@reduxjs/toolkit": "^2.5.1",
+    "axios": "^1.7.9",
     "formic": "^0.0.10",
     "formik": "^2.4.6",
     "framer-motion": "^12.4.2",
