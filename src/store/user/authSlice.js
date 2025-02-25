@@ -21,10 +21,13 @@ export const checkAuthStatus = createAsyncThunk(
       if (!token) {
         return null; // No token found
       }
-      const response = await axios.get("http://localhost:8000/api/v1/auth/me", {
-        // Replace with your API endpoint
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "https://audiblebooks-backend.onrender.com/api/v1/auth/me",
+        {
+          // Replace with your API endpoint
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.status === 200) {
         return {
           token: token,
