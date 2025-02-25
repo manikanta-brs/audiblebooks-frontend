@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const RootLayout = () => {
   const { isLoggedIn } = useSelector((state) => state.auth);
-  console.log(isLoggedIn);
+  console.log(`%c is it ${isLoggedIn} bavani`, "color: red;");
   return (
     <div>
       {isLoggedIn && <NavigationBar />}

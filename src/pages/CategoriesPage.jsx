@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import "../index.css";
 import { useGetCategoriesAPIQuery } from "../store/categories/categoryApiSlice.js"; //Correct API Slice reference
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom"; // Import useNavigate
 import LoadingSpinner from "../components/LoadingSpinner.jsx"; // Import LoadingSpinner component
 
 const CategoriesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const {
     data: categories,
@@ -13,17 +14,15 @@ const CategoriesPage = () => {
     isError,
     error,
   } = useGetCategoriesAPIQuery();
-
-  console.log("Categories:", categories);
-  console.log("Loading:", isLoading);
-  console.log("Error:", error);
-
-  // Filter categories based on search input
   const filteredCategories = categories
     ? categories.filter((category) =>
         category.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
+
+  const handleCategoryClick = (categoryName) => {
+    navigate(`/category/${encodeURIComponent(categoryName)}`); // Programmatically navigate
+  };
 
   return (
     <>
@@ -32,21 +31,21 @@ const CategoriesPage = () => {
         {/* Heading and Search Bar */}
         <div className="flex justify-between items-center mb-8">
           {/* Categories Heading */}
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mt-10">
             Categories
           </h1>
           {/* Search Bar */}
-          <div className="relative backdrop-filter backdrop-blur-md bg-white bg-opacity-10 rounded-full shadow-lg border border-gray-200 border-opacity-20">
+          <div className="relative bg-white rounded-full shadow-md border border-gray-300 focus-within:border-blue-500 transition-all duration-200">
             <input
               type="text"
               placeholder="Search categories..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64 px-4 py-2 rounded-full bg-transparent focus:outline-none text-black placeholder-gray-300 pr-10" /* pr-10 to give space for icon */
+              className="w-64 px-4 py-2 rounded-full focus:outline-none text-gray-800 placeholder-gray-500 pr-10 bg-white" //Explicit white bg and darker text
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-opacity-70"
+              className="h-5 w-5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600" // Darker icon
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -92,15 +91,14 @@ const CategoriesPage = () => {
                   group cursor-pointer relative
                   hover:animate-rotate-gradient
                 "
+                onClick={() => handleCategoryClick(category.name)} // Add onClick handler to the outer div
               >
                 {/* Inner Circle */}
                 <div className="w-24 h-24 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-48 lg:h-48 rounded-full bg-white flex items-center justify-center">
-                  <NavLink
-                    to={`/category/${encodeURIComponent(category.name)}`}
-                    className="text-center text-gray-800 font-bold hover:text-gray-600 transition-colors duration-300 text-sm sm:text-lg md:text-xl lg:text-2xl"
-                  >
+                  {/* Removed NavLink and kept the text */}
+                  <div className="text-center text-gray-800 font-bold hover:text-gray-600 transition-colors duration-300 text-sm sm:text-lg md:text-xl lg:text-2xl">
                     {category.name}
-                  </NavLink>
+                  </div>
                 </div>
               </div>
             ))

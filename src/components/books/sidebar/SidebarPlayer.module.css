@@ -13,8 +13,17 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   z-index: 1000;
   overflow: auto;
-  display: flex; /* Use flexbox for sidebar content */
-  flex-direction: column; /* Stack elements vertically */
+  display: flex;
+  flex-direction: column;
+
+  /* Hide the scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Target Chrome, Safari and Opera */
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar.active {
@@ -26,20 +35,30 @@
   left: 0;
   height: 100vh;
   top: 0;
+  padding: 20px;
+  box-sizing: border-box;
+  /* Remove align-items: center;  This was causing vertical centering issues */
+}
+
+.headerButtons {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-start;
+  margin-bottom: 10px;
+  width: 100%;
 }
 
 .closeButton,
 .maximizeButton {
   background-color: #555;
-  color: #fff;
+  color: white;
   border: none;
   padding: 8px 12px;
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.2s ease-in-out;
-  margin-bottom: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .closeButton:hover,
@@ -47,33 +66,28 @@
   background-color: #777;
 }
 
-/* Styles for maximized mode (side-by-side) */
-.playerAndDetails {
+/* Hide default AudioPlayer container in maximized state */
+.audioPlayerContainer {
+  margin-bottom: 20px;
+  width: 100%;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 10px;
-  gap: 20px;
-  width: 100%; /* Take full width in maximized mode */
+  justify-content: center;
 }
 
-/* Styles for minimized mode (below the player) */
-.bookDetailsBelow {
-  text-align: center;
-  margin-top: 10px;
-  width: 100%; /* Take full width in minimized mode */
+.sidebar.maximized .audioPlayerContainer {
+  display: none;
+}
+
+.audioPlayerContainer > * {
+  max-width: 300px;
 }
 
 .bookDetails {
   text-align: center;
-  margin-top: 10px;
-  width: 80%;
-  max-width: 600px;
-  flex: 1;
+  width: auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
+  align-items: center;
 }
 
 .bookDetails h2 {
@@ -91,7 +105,7 @@
 }
 
 .reviewInput {
-  width: 100%;
+  width: auto;
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid #555;
@@ -109,8 +123,111 @@
   cursor: pointer;
   font-size: 1em;
   transition: background-color 0.2s ease-in-out;
+  width: auto;
 }
 
 .submitButton:hover {
   background-color: #367c39;
+}
+
+/* Minimized states */
+.initialMinimizeButtonContainer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+}
+
+.minimizeButton {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.minimizeButton:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.minimizedButtonContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.minimizedButton {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.minimizedButton:hover {
+  background-color: #2980b9;
+}
+
+.minimizedCloseButton {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.minimizedCloseButton:hover {
+  background-color: #c0392b;
+}
+
+/*--------------------------------------------------
+NEW Styles for Maximized Player Card
+--------------------------------------------------*/
+
+.playerCard {
+  background: linear-gradient(
+    135deg,
+    #43cbff 0%,
+    #9708cc 100%
+  ); /* Gradient background */
+  border-radius: 20px; /* Rounded corners */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  width: 80%; /* Adjust width as needed */
+  max-width: 400px; /* Maximum width */
+  text-align: center;
+  color: white; /* Text color */
+}
+
+.coverImageContainer {
+  width: 120px; /* Adjust size as needed */
+  height: 120px; /* Keep it square */
+  border-radius: 50%; /* Make it circular */
+  overflow: hidden; /* Clip the image to the circle */
+  margin: 0 auto 15px; /* Center the image */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Shadow on the circle */
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image fills the circle */
+}
+
+.audioPlayer {
+  margin-top: 15px; /* Spacing above the player */
+  /* Force AudioPlayer to take 100% width of it's container */
+  width: 100%;
 }

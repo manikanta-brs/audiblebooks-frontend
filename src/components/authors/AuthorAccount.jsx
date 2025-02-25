@@ -31,41 +31,14 @@ const AuthorAccount = ({ isAuthor }) => {
   const { userData: reduxUserData, loading } = useSelector(
     (state) => state.auth
   );
-  console.log("Redux User Data in AuthorAccount:", reduxUserData);
 
-  const initialValues = useMemo(() => {
-    if (loading || !reduxUserData) {
-      return {
-        first_name: "",
-        last_name: "",
-        email: "",
-        pen_name: "",
-      };
-    }
-
-    if (isAuthor && reduxUserData?.profileData) {
-      return {
-        first_name: reduxUserData.profileData?.first_name || "",
-        last_name: reduxUserData.profileData?.last_name || "",
-        email: reduxUserData.profileData?.email || "",
-        pen_name: "",
-      };
-    } else {
-      return {
-        first_name: "",
-        last_name: "",
-        email: "",
-        pen_name: "",
-      };
-    }
-  }, [isAuthor, reduxUserData, loading]);
-
-  const {
-    data: authorData,
-    isLoading: isAuthorProfileLoading,
-    refetch: refetchAuthorProfile,
-    isFetching: isFetchingAuthorProfile,
-  } = useGetAuthorProfileAPIQuery(undefined, { skip: !isAuthor });
+  // Temporarily disable the author profile query to avoid conflicts
+  // const {
+  //   data: authorData,
+  //   isLoading: isAuthorProfileLoading,
+  //   refetch: refetchAuthorProfile,
+  //   isFetching: isFetchingAuthorProfile,
+  // } = useGetAuthorProfileAPIQuery(undefined, { skip: !isAuthor });
 
   const [updateAuthorProfileAPI, { isLoading: isAuthorUpdating }] =
     useUpdateAuthorProfileAPIMutation();
@@ -75,8 +48,36 @@ const AuthorAccount = ({ isAuthor }) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isLoading = loading || isFetchingAuthorProfile;
+  const isLoading = loading; // || isFetchingAuthorProfile; // Removed isFetchingAuthorProfile
   const isUpdating = isAuthorUpdating || isUserUpdating || isSubmitting;
+
+  const initialValues = useMemo(() => {
+    if (loading || !reduxUserData || !reduxUserData.profileData) {
+      return {
+        first_name: "",
+        last_name: "",
+        email: "",
+        pen_name: "",
+      };
+    }
+    const profileData = reduxUserData.profileData;
+    if (isAuthor) {
+      return {
+        first_name: profileData?.first_name || "",
+        last_name: profileData?.last_name || "",
+        email: profileData?.email || "",
+        pen_name: profileData?.pen_name || "",
+      };
+    } else {
+      return {
+        first_name: profileData?.first_name || "",
+        last_name: profileData?.last_name || "",
+        email: profileData?.email || "",
+      };
+    }
+  }, [isAuthor, reduxUserData, loading]);
+
+  console.log(`%c hmm redux data getting amma mari....`, "color: red");
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -93,20 +94,25 @@ const AuthorAccount = ({ isAuthor }) => {
           last_name: values.last_name,
           pen_name: values.pen_name,
         }).unwrap();
-
-        dispatch(
-          updateAuthorProfile({
-            first_name: values.first_name,
-            last_name: values.last_name,
-            pen_name: values.pen_name,
-            email: initialValues.email,
-          })
-        );
       } else {
         response = await updateUserProfileAPI({
           first_name: values.first_name,
           last_name: values.last_name,
         }).unwrap();
+      }
+
+      // console.log("API Response:", response); // Added: Check API Response
+      console.log(`%c response is coming anta mari`, "color:yellow");
+
+      if (isAuthor) {
+        dispatch(
+          updateAuthorProfile({
+            first_name: values.first_name,
+            last_name: values.last_name,
+            pen_name: values.pen_name,
+          })
+        );
+      } else {
         dispatch(
           updateUserProfile({
             first_name: values.first_name,
@@ -132,13 +138,14 @@ const AuthorAccount = ({ isAuthor }) => {
           {isAuthor ? "Update Author Profile" : "Update User Profile"}
         </h2>
 
-        {!isLoading && ( // Conditionally render Formik form
+        {!isLoading && initialValues && (
+          // Conditionally render Formik form
           <Formik
             key={isAuthor ? "authorForm" : "userForm"}
             initialValues={initialValues}
             validationSchema={sharedSchema}
             onSubmit={handleSubmit}
-            enableReinitialize={true}
+            enableReinitialize={false}
           >
             {({ isSubmitting: formikIsSubmitting }) => (
               <Form>

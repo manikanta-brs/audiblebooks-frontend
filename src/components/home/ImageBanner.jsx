@@ -1,52 +1,3 @@
-// import { useState, useEffect } from "react";
-
-// const quotes = [
-//   {
-//     quote: "A reader lives a thousand lives before he dies...",
-//     book: "A Dance with Dragons",
-//     author: "George R.R. Martin",
-//   },
-//   {
-//     quote: "It is our choices that show what we truly are...",
-//     book: "Harry Potter and the Chamber of Secrets",
-//     author: "J.K. Rowling",
-//   },
-//   {
-//     quote: "Happiness can be found in the darkest of times...",
-//     book: "Harry Potter and the Prisoner of Azkaban",
-//     author: "J.K. Rowling",
-//   },
-//   {
-//     quote: "Fairy tales are more than true...",
-//     book: "Coraline",
-//     author: "Neil Gaiman",
-//   },
-// ];
-
-// const QuoteBanner = () => {
-//   const [index, setIndex] = useState(0);
-
-//   useEffect(() => {
-//     const interval = setInterval(() => {
-//       setIndex((prevIndex) => (prevIndex + 1) % quotes.length);
-//     }, 4000); // Change quote every 4 seconds
-
-//     return () => clearInterval(interval);
-//   }, []);
-
-//   return (
-//     <div className="bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-lg p-6 text-center shadow-lg">
-//       <h2 className="text-2xl italic">"{quotes[index].quote}"</h2>
-//       <p className="mt-2 text-lg font-semibold">— {quotes[index].author}</p>
-//       <p className="text-sm">{quotes[index].book}</p>
-//       <button className="mt-4 px-4 py-2 bg-yellow-400 text-black font-bold rounded-lg hover:bg-yellow-500 transition">
-//         🎧 Listen Now
-//       </button>
-//     </div>
-//   );
-// };
-
-// export default QuoteBanner;
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 
@@ -147,13 +98,20 @@ const ImageBanner = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const scrollToBooks = () => {
+    const element = document.getElementById("books");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <StyledImageBanner>
       <QuoteContainer>
         <QuoteText>"{quotes[index].quote}"</QuoteText>
         <Author>— {quotes[index].author}</Author>
         <Book>{quotes[index].book}</Book>
-        <ListenButton>🎧 Listen Now</ListenButton>
+        <ListenButton onClick={scrollToBooks}>🎧 Listen Now</ListenButton>
       </QuoteContainer>
     </StyledImageBanner>
   );

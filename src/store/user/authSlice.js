@@ -1,92 +1,88 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { merge } from "lodash"; // For deep merging
-
-// Load initial state from localStorage with error handling
-let token = null;
-try {
-  const storedToken = localStorage.getItem("token");
-  console.log(storedToken);
-  if (storedToken) {
-    token = JSON.parse(storedToken);
-    console.log("Token from localStorage:", token);
-  }
-} catch (error) {
-  console.error("Error parsing token from localStorage:", error);
-  token = null;
-}
-
-let userData = null;
-try {
-  const storedUserData = localStorage.getItem("userData");
-  if (storedUserData) {
-    userData = JSON.parse(storedUserData);
-    console.log("UserData from localStorage:", userData);
-  }
-} catch (error) {
-  console.error("Error parsing userData from localStorage:", error);
-  userData = null;
-}
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios"; // Import Axios or your preferred HTTP client
 
 const initialState = {
-  token,
-  isLoggedIn: !!token,
-  userData,
+  token: null,
+  isLoggedIn: false,
+  userData: null,
   isAuthorLogin: false,
   isSidebarOpen: false,
   storyInfo: { name: null, id: null },
-  error: null, // For error messages
+  error: null,
+  isLoading: true, // ADD THIS:  Initially true
 };
+
+//Async thunk to validate user and author tokens
+export const checkAuthStatus = createAsyncThunk(
+  "auth/checkAuthStatus",
+  async (_, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        return null; // No token found
+      }
+      const response = await axios.get("http://localhost:8000/api/v1/auth/me", {
+        // Replace with your API endpoint
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 200) {
+        return {
+          token: token,
+          userData: response.data.data,
+          isAuthor: response.data.data.role === "author", // Adjust based on your API response
+        }; // Return the token and user data
+      } else {
+        localStorage.removeItem("authToken");
+        return null;
+      }
+    } catch (error) {
+      localStorage.removeItem("authToken");
+      return thunkAPI.rejectWithValue(error.message); // Reject with an error message
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
     login: (state, action) => {
-      try {
-        state.token = action.payload.token;
-        localStorage.setItem("token", JSON.stringify(action.payload.token));
-        state.isLoggedIn = true;
-        state.userData = action.payload;
-        localStorage.setItem("userData", JSON.stringify(action.payload));
-        console.log("Token saved:", action.payload.token);
-        console.log("UserData saved:", action.payload);
-        state.isAuthorLogin = action.payload.isAuthor === true; //  <----  CORRECTED LINE!
-      } catch (error) {
-        console.error("Failed to save data to localStorage:", error);
-        state.error = "Failed to save data to localStorage"; // Set an error message
-      }
+      state.token = action.payload.token;
+      state.isLoggedIn = true;
+      state.userData = action.payload;
+      state.isAuthorLogin = action.payload.isAuthor === true;
     },
-
     logout: (state) => {
-      try {
-        state.token = null;
-        localStorage.removeItem("token");
-        state.isLoggedIn = false;
-        state.isAuthorLogin = false;
-        localStorage.removeItem("userData"); // Clear userdata too
-      } catch (error) {
-        console.error("Failed to remove data from localStorage:", error);
-      }
+      state.token = null;
+      state.isLoggedIn = false;
+      state.isAuthorLogin = false;
+      state.userData = null;
+      localStorage.removeItem("authToken"); //remove token from localstorage also
     },
     setUserProfile: (state, action) => {
       state.userData = action.payload;
     },
-
     updateUserProfile: (state, action) => {
       if (state.userData && state.userData.profileData) {
-        // Directly update properties within profileData using object spread
-        state.userData.profileData = {
-          ...state.userData.profileData,
-          ...action.payload, // payload should contain { first_name, last_name }
+        state.userData = {
+          ...state.userData, // Create a new userData object
+          profileData: {
+            ...state.userData.profileData, // Create a new profileData object
+            ...action.payload, // Merge in the changes from the payload
+          },
         };
       }
     },
     updateAuthorProfile: (state, action) => {
-      if (state.userData && state.userData.authorData) {
-        // Directly update properties within authorData using object spread
-        state.userData.authorData = {
-          ...state.userData.authorData,
-          ...action.payload, // payload should contain { first_name, last_name, pen_name }
+      if (state.userData && state.userData.profileData) {
+        // Corrected this line: Use profileData instead of authorData
+        state.userData = {
+          ...state.userData, // Create a new userData object
+          profileData: {
+            // Corrected this line: Use profileData instead of authorData
+            ...state.userData.profileData, // Create a new profileData object
+            ...action.payload, // Merge in the changes from the payload
+          },
         };
       }
     },
@@ -94,9 +90,14 @@ const authSlice = createSlice({
       const languageId = action.payload;
       const index = state.userData.languages.indexOf(languageId);
       if (index === -1) {
-        state.userData.languages.push(languageId);
+        // Immutable push:  Create a new array
+        state.userData.languages = [...state.userData.languages, languageId];
       } else {
-        state.userData.languages.splice(index, 1);
+        // Immutable splice: Create a new array
+        state.userData.languages = [
+          ...state.userData.languages.slice(0, index),
+          ...state.userData.languages.slice(index + 1),
+        ];
       }
     },
     toggleSidebar: (state) => {
@@ -110,40 +111,38 @@ const authSlice = createSlice({
       state.spotifyToken = action.payload.spotifyToken.access_token;
     },
     setError: (state, action) => {
-      state.error = action.payload; // To show errors to the user
+      state.error = action.payload;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase("persist/REHYDRATE", (state, action) => {
-      if (action.payload?.auth) {
-        try {
-          const storedToken = localStorage.getItem("token");
-          if (storedToken) {
-            state.token = JSON.parse(storedToken);
-            state.isLoggedIn = true;
-          } else {
-            state.token = null;
-            state.isLoggedIn = false;
-          }
-
-          const storedUserData = localStorage.getItem("userData");
-          if (storedUserData) {
-            state.userData = JSON.parse(storedUserData);
-          } else {
-            state.userData = null;
-          }
-
-          state.isAuthorLogin = action.payload.auth.isAuthorLogin || false;
-        } catch (error) {
-          console.error("Error during rehydration:", error);
-          // Handle the error appropriately, e.g., clear the token, set an error state
-          state.token = null;
+    builder
+      .addCase(checkAuthStatus.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(checkAuthStatus.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (action.payload) {
+          state.token = action.payload.token;
+          state.isLoggedIn = true;
+          state.userData = action.payload.userData;
+          state.isAuthorLogin = action.payload.isAuthor;
+        } else {
+          // No valid token found
           state.isLoggedIn = false;
+          state.token = null;
           state.userData = null;
           state.isAuthorLogin = false;
         }
-      }
-    });
+      })
+      .addCase(checkAuthStatus.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isLoggedIn = false;
+        state.token = null;
+        state.userData = null;
+        state.isAuthorLogin = false;
+        state.error = action.payload;
+      });
   },
 });
 

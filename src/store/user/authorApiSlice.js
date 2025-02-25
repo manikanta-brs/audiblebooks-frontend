@@ -26,7 +26,7 @@ export const authorApiSlice = apiSlice.injectEndpoints({
     updateAuthorProfileAPI: builder.mutation({
       query: (authorData) => {
         const token = localStorage.getItem("token");
-        console.log("Token from localStorage:", token);
+        // console.log("Token from localStorage:", token);
         return {
           url: `${AUTHOR_ENDPOINT}/profile`,
           method: "PUT",
@@ -41,9 +41,9 @@ export const authorApiSlice = apiSlice.injectEndpoints({
       // ADD THIS
       query: (passwordData) => {
         const token = localStorage.getItem("token");
-        console.log("Token from localStorage:", token);
+        // console.log("Token from localStorage:", token);
         return {
-          url: `${AUTHOR_ENDPOINT}/profile`, // Adjust the URL if different
+          url: `${AUTHOR_ENDPOINT}/updatepassword`, // Adjust the URL if different
           method: "PUT", // Or POST, depending on your API
           body: passwordData,
           headers: {
@@ -51,6 +51,20 @@ export const authorApiSlice = apiSlice.injectEndpoints({
           },
         };
       },
+    }),
+    forgotAuthorPasswordAPI: builder.mutation({
+      query: (email) => ({
+        url: `${AUTHOR_ENDPOINT}/forgotpassword`,
+        method: "POST",
+        body: { email },
+      }),
+    }),
+    resetAuthorPasswordAPI: builder.mutation({
+      query: ({ token, password }) => ({
+        url: `${AUTHOR_ENDPOINT}/resetauthorpassword/${token}`,
+        method: "PUT",
+        body: { password },
+      }),
     }),
   }),
 });
@@ -60,5 +74,7 @@ export const {
   useGetAuthorProfileAPIQuery,
   useRegisterAuthorMutation,
   useUpdateAuthorProfileAPIMutation,
-  useUpdateAuthorPasswordAPIMutation, // ADD THIS
+  useUpdateAuthorPasswordAPIMutation,
+  useForgotAuthorPasswordAPIMutation,
+  useResetAuthorPasswordAPIMutation,
 } = authorApiSlice;

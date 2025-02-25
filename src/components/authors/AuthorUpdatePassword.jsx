@@ -1,7 +1,9 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useUpdateAuthorPasswordAPIMutation } from "../../store/user/authorApiSlice"; // Corrected import
+import { useUpdateAuthorPasswordAPIMutation } from "../../store/user/authorApiSlice";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -17,22 +19,33 @@ const initialValues = { password: "", confirmPassword: "" };
 
 const AuthorUpdatePassword = () => {
   const [updatePasswordAPI, { isLoading }] =
-    useUpdateAuthorPasswordAPIMutation(); // Corrected mutation
+    useUpdateAuthorPasswordAPIMutation();
+  const { userData } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    // Force a re-render of the hidden field after the component mounts
+    // to help the browser recognize the autocomplete attribute.
+    const timer = setTimeout(() => {
+      // No actual logic needed; the re-render is the point
+    }, 0); // Use a zero-delay timeout
+
+    return () => clearTimeout(timer); // Clean up the timeout
+  }, []);
 
   const handleSubmit = async (values, { resetForm }) => {
     try {
-      const token = localStorage.getItem("token");
-      console.log("Token before API call:", token); // Log the token
+      // ADD: Construct the data based on what the backend expects!
+      const passwordData = {
+        password: values.password, // Corrected
+        // other fields the backend needs... (e.g., currentPassword)
+      };
 
-      const response = await updatePasswordAPI({
-        password: values.password,
-      }).unwrap();
+      const response = await updatePasswordAPI(passwordData).unwrap();
 
-      console.log("API Success Response:", response); // Log success response
       toast.success(response.message);
       resetForm();
     } catch (error) {
-      console.error("API Error Response:", error); // Log the full error
+      console.error("API Error Response:", error);
       toast.error(error?.data?.message || error.error);
     }
   };
@@ -50,9 +63,17 @@ const AuthorUpdatePassword = () => {
           onSubmit={handleSubmit}
         >
           {({ isSubmitting }) => (
-            <Form className="max-w-md">
+            <Form className="max-w-md" action="">
               {" "}
-              {/* Reduced max-w for better fit */}
+              {/* Reduced max-w for better fit. Added action="" */}
+              {/*Hidden Email Field*/}
+              <Field
+                type="hidden"
+                id="email"
+                name="email"
+                value={userData?.email || ""}
+                autoComplete="username" // Try this for testing (carefully)
+              />
               <div className="mb-4">
                 <label
                   htmlFor="password"
@@ -65,6 +86,7 @@ const AuthorUpdatePassword = () => {
                   id="password"
                   name="password"
                   placeholder="Password"
+                  autoComplete="new-password"
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-white bg-opacity-70 text-sm"
                 />
                 <ErrorMessage
@@ -85,6 +107,7 @@ const AuthorUpdatePassword = () => {
                   id="confirmPassword"
                   name="confirmPassword"
                   placeholder="Confirm Password"
+                  autoComplete="new-password"
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-white bg-opacity-70 text-sm"
                 />
                 <ErrorMessage

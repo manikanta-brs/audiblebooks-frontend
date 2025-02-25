@@ -1,162 +1,358 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import { useResetPasswordAPIMutation } from "../store/user/userApiSlice";
-import { useParams, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import * as Yup from "yup";
+// import { useEffect, useState } from "react";
+// import { useParams, useNavigate } from "react-router-dom";
+// import { useResetUserPasswordAPIMutation } from "../store/user/userApiSlice";
+// import { useResetAuthorPasswordAPIMutation } from "../store/user/authorApiSlice";
+// import { Formik, Form, Field, ErrorMessage } from "formik";
+// import * as Yup from "yup";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+// import { toast } from "react-toastify";
+// import { useDispatch, useSelector } from "react-redux";
+// import { login } from "../store/user/authSlice";
 
-const initialValues = {
-  password: "",
-  confirmPassword: "",
-};
-const validateSchema = Yup.object().shape({
+// const validationSchema = Yup.object().shape({
+//   password: Yup.string()
+//     .required("Password is required")
+//     .min(6, "Password must be at least 6 characters")
+//     .max(40, "Password must not exceed 40 characters"),
+//   confirmPassword: Yup.string()
+//     .oneOf([Yup.ref("password"), null], "Passwords must match")
+//     .required("Confirm Password is required"),
+// });
+
+// const ResetPasswordPage = ({ isAuthor }) => {
+//   // get isLoggedIn from state using useSelector
+//   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+//   // navigate to home if isLoggedIn is true
+
+//   const { token } = useParams();
+//   const navigate = useNavigate();
+//   const dispatch = useDispatch();
+//   useEffect(() => {
+//     if (isLoggedIn) {
+//       navigate("/home"); // Redirect to the home page
+//     }
+//   }, [isLoggedIn, navigate]);
+//   const [resetUserPassword] = useResetUserPasswordAPIMutation();
+//   const [resetAuthorPassword] = useResetAuthorPasswordAPIMutation();
+//   const [showPassword, setShowPassword] = useState(false);
+
+//   const togglePasswordVisibility = () => {
+//     setShowPassword(!showPassword);
+//   };
+
+//   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+//     setSubmitting(true);
+//     try {
+//       const result = isAuthor
+//         ? await resetAuthorPassword({
+//             token,
+//             password: values.password,
+//           }).unwrap()
+//         : await resetUserPassword({
+//             token,
+//             password: values.password,
+//           }).unwrap();
+
+//       console.log("Success Ayyindi mawa 😊", result);
+//       toast.success("Password reset successful! Redirecting to login...");
+//       resetForm();
+
+//       // Dispatch the login action with the new token
+//       dispatch(login(result));
+
+//       setTimeout(() => {
+//         navigate("/"); // Redirect to home page after successful reset
+//       }, 2000); // Delay for 2 seconds
+//     } catch (error) {
+//       console.error("Error:", error);
+//       toast.error(error.data?.message || "Something went wrong.");
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-black py-12 flex justify-center items-center">
+//       <div className="relative sm:max-w-lg w-full bg-gradient-to-l from-green-300 to-blue-200 p-8 rounded-3xl shadow-lg shadow-white-shadow overflow-hidden">
+//         <div className="absolute inset-0 bg-white bg-opacity-40 backdrop-blur-lg rounded-3xl z-0"></div>
+//         <div className="relative z-10">
+//           <div className="text-center mb-6">
+//             <h2 className="text-3xl font-extrabold text-gray-800 mb-2">
+//               AudibleBooks
+//             </h2>
+//             <h2 className="text-2xl font-extrabold text-gray-800 mb-2">
+//               Reset Password ({isAuthor ? "Author" : "User"})
+//             </h2>
+//             <p className="text-gray-700 text-sm">Enter your new password.</p>
+//           </div>
+
+//           <Formik
+//             initialValues={{ password: "", confirmPassword: "" }}
+//             validationSchema={validationSchema}
+//             onSubmit={handleSubmit}
+//           >
+//             {({ isSubmitting }) => (
+//               <Form>
+//                 <div className="mb-6 relative">
+//                   <label
+//                     htmlFor="password"
+//                     className="block text-sm font-semibold text-gray-800 mb-1"
+//                   >
+//                     New Password
+//                   </label>
+//                   <div className="relative">
+//                     <Field
+//                       type={showPassword ? "text" : "password"}
+//                       name="password"
+//                       placeholder="••••••••"
+//                       className="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-900 leading-5 text-sm"
+//                       autoComplete="new-password"
+//                     />
+//                     <div
+//                       className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+//                       onClick={togglePasswordVisibility}
+//                     >
+//                       <FontAwesomeIcon
+//                         icon={showPassword ? faEye : faEyeSlash}
+//                         className="h-5 w-5 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+//                       />
+//                     </div>
+//                   </div>
+//                   <ErrorMessage
+//                     name="password"
+//                     component="div"
+//                     className="text-red-500 text-xs mt-1"
+//                   />
+//                 </div>
+
+//                 <div className="mb-6 relative">
+//                   <label
+//                     htmlFor="confirmPassword"
+//                     className="block text-sm font-semibold text-gray-800 mb-1"
+//                   >
+//                     Confirm New Password
+//                   </label>
+//                   <div className="relative">
+//                     <Field
+//                       type={showPassword ? "text" : "password"}
+//                       name="confirmPassword"
+//                       placeholder="••••••••"
+//                       className="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-900 leading-5 text-sm"
+//                       autoComplete="new-password"
+//                     />
+//                     <div
+//                       className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+//                       onClick={togglePasswordVisibility}
+//                     >
+//                       <FontAwesomeIcon
+//                         icon={showPassword ? faEye : faEyeSlash}
+//                         className="h-5 w-5 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+//                       />
+//                     </div>
+//                   </div>
+//                   <ErrorMessage
+//                     name="confirmPassword"
+//                     component="div"
+//                     className="text-red-500 text-xs mt-1"
+//                   />
+//                 </div>
+
+//                 <div>
+//                   <button
+//                     type="submit"
+//                     disabled={isSubmitting}
+//                     className="w-48 px-4 py-2 rounded-md shadow-md text-white font-semibold bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition-colors duration-300 text-sm mx-auto block"
+//                   >
+//                     {isSubmitting ? "Resetting..." : "Reset Password"}
+//                   </button>
+//                 </div>
+//               </Form>
+//             )}
+//           </Formik>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ResetPasswordPage;
+
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useResetUserPasswordAPIMutation } from "../store/user/userApiSlice";
+import { useResetAuthorPasswordAPIMutation } from "../store/user/authorApiSlice";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+//import { login } from "../store/user/authSlice"; // Remove import
+
+const validationSchema = Yup.object().shape({
   password: Yup.string()
     .required("Password is required")
     .min(6, "Password must be at least 6 characters")
     .max(40, "Password must not exceed 40 characters"),
   confirmPassword: Yup.string()
-    .required("Confirm Password is required")
-    .oneOf([Yup.ref("password"), null], "Confirm Password does not match"),
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Confirm Password is required"),
 });
 
-const ResetPasswordPage = () => {
+const ResetPasswordPage = ({ isAuthor }) => {
+  // get isLoggedIn from state using useSelector
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  // navigate to home if isLoggedIn is true
+
+  const { token } = useParams();
   const navigate = useNavigate();
-  let { token } = useParams();
-  // console.log(token);
-  const [resetPasswordAPI, { isLoading }] = useResetPasswordAPIMutation();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/home"); // Redirect to the home page
+    }
+  }, [isLoggedIn, navigate]);
+  const [resetUserPassword] = useResetUserPasswordAPIMutation();
+  const [resetAuthorPassword] = useResetAuthorPasswordAPIMutation();
+  const [showPassword, setShowPassword] = useState(false);
 
-  // const handleSubmit = async (values, { resetForm }) => {
-  //   console.log(values);
-  //   try {
-  //     const response = await resetPasswordAPI({
-  //       password: values.password,
-  //       token,
-  //     });
-  //     resetForm();
-  //     navigate("/login", { replace: true });
-  //     toast.success(response.message);
-  //   } catch {
-  //     toast.error(error?.data?.message || error.error);
-  //   }
-  //   // const response = await resetPasswordAPI({
-  //   //   password: values.password,
-  //   //   token,
-  //   // });
-  //   // console.log(response);
-  // };
-  // const handleSubmit = async (values, { setSubmitting }) => {
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:5000/api/users/resetpassword/${values.token}`,
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ password: values.password }),
-  //       }
-  //     );
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
-  //     if (!response.ok) {
-  //       const errorResponse = await response.json(); // Capture error message
-  //       throw new Error(errorResponse.message || "Failed to reset password");
-  //     }
-
-  //     console.log("Password reset successful!");
-  //     // Redirect or show success message
-  //   } catch (err) {
-  //     console.error("Error during password reset:", err.message);
-  //     alert(err.message); // Show the error to the user
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
-  const handleSubmit = async (values, { resetForm }) => {
-    console.log(values);
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    setSubmitting(true);
     try {
-      const response = await resetPasswordAPI({
-        token: token, // Pass the token from the URL
-        password: values.password,
-      }).unwrap();
+      const result = isAuthor
+        ? await resetAuthorPassword({
+            token,
+            password: values.password,
+          }).unwrap()
+        : await resetUserPassword({
+            token,
+            password: values.password,
+          }).unwrap();
+
+      console.log("Success Ayyindi mawa 😊", result);
+      toast.success("Password reset successful! Redirecting to login...");
       resetForm();
-      navigate("/login", { replace: true });
-      toast.success(response.message);
+
+      // **Remove this dispatch.  Don't log in after reset**
+      // dispatch(login(result));
+
+      setTimeout(() => {
+        navigate("/"); // Redirect to login page (usually root)
+      }, 2000); // Delay for 2 seconds
     } catch (error) {
-      toast.error(
-        error?.data?.message || error?.message || "Password reset failed"
-      );
+      console.error("Error:", error);
+      toast.error(error.data?.message || "Something went wrong.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <>
-      <div className="grid place-items-center mb-3">
-        <img className="w-16 h-16" src="/images/logo.svg" alt="Workflow" />
-      </div>
-      <div className="Auth-form-container">
-        <div className="Auth-form">
-          <div className="Auth-form-content">
-            <Formik
-              initialValues={initialValues}
-              validationSchema={validateSchema}
-              onSubmit={handleSubmit}
-            >
-              {({ isSubmitting }) => (
-                <Form>
-                  <h3 className="Auth-form-title py-4 text-center">
-                    Reset Password
-                  </h3>
-                  <hr />
-
-                  <div className="form-group mt-3 px-5 py-2 mx-5">
-                    <label>New Password</label>
-                    <Field
-                      type="password"
-                      name="password"
-                      placeholder="Password"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    />
-                    <ErrorMessage
-                      className="err_msg"
-                      name="password"
-                      component="div"
-                    />
-                  </div>
-
-                  <div className="form-group mt-3 px-5 py-2 mx-5">
-                    <label>Confirm New Password</label>
-                    <Field
-                      type="password"
-                      name="confirmPassword"
-                      placeholder="Confirm Password"
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    />
-                    <ErrorMessage
-                      className="err_msg"
-                      name="confirmPassword"
-                      component="div"
-                    />
-                  </div>
-
-                  <div className="d-grid gap-2 mt-3 px-5 mb-4 mx-5">
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className={`block w-full py-2 px-4 rounded-xl btnPurpleColor ${
-                        isLoading
-                          ? "bg-blue-400 cursor-not-allowed"
-                          : "bg-blue-500 hover:bg-blue-700 text-white font-bold"
-                      }`}
-                    >
-                      Submit
-                    </button>
-                  </div>
-                </Form>
-              )}
-            </Formik>
+    <div className="min-h-screen bg-black py-12 flex justify-center items-center">
+      <div className="relative sm:max-w-lg w-full bg-gradient-to-l from-green-300 to-blue-200 p-8 rounded-3xl shadow-lg shadow-white-shadow overflow-hidden">
+        <div className="absolute inset-0 bg-white bg-opacity-40 backdrop-blur-lg rounded-3xl z-0"></div>
+        <div className="relative z-10">
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-extrabold text-gray-800 mb-2">
+              AudibleBooks
+            </h2>
+            <h2 className="text-2xl font-extrabold text-gray-800 mb-2">
+              Reset Password ({isAuthor ? "Author" : "User"})
+            </h2>
+            <p className="text-gray-700 text-sm">Enter your new password.</p>
           </div>
+
+          <Formik
+            initialValues={{ password: "", confirmPassword: "" }}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ isSubmitting }) => (
+              <Form>
+                <div className="mb-6 relative">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-semibold text-gray-800 mb-1"
+                  >
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <Field
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="••••••••"
+                      className="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-900 leading-5 text-sm"
+                      autoComplete="new-password"
+                    />
+                    <div
+                      className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                      onClick={togglePasswordVisibility}
+                    >
+                      <FontAwesomeIcon
+                        icon={showPassword ? faEye : faEyeSlash}
+                        className="h-5 w-5 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                      />
+                    </div>
+                  </div>
+                  <ErrorMessage
+                    name="password"
+                    component="div"
+                    className="text-red-500 text-xs mt-1"
+                  />
+                </div>
+
+                <div className="mb-6 relative">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-semibold text-gray-800 mb-1"
+                  >
+                    Confirm New Password
+                  </label>
+                  <div className="relative">
+                    <Field
+                      type={showPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      placeholder="••••••••"
+                      className="w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 text-gray-900 leading-5 text-sm"
+                      autoComplete="new-password"
+                    />
+                    <div
+                      className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                      onClick={togglePasswordVisibility}
+                    >
+                      <FontAwesomeIcon
+                        icon={showPassword ? faEye : faEyeSlash}
+                        className="h-5 w-5 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                      />
+                    </div>
+                  </div>
+                  <ErrorMessage
+                    name="confirmPassword"
+                    component="div"
+                    className="text-red-500 text-xs mt-1"
+                  />
+                </div>
+
+                <div>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-48 px-4 py-2 rounded-md shadow-md text-white font-semibold bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition-colors duration-300 text-sm mx-auto block"
+                  >
+                    {isSubmitting ? "Resetting..." : "Reset Password"}
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
