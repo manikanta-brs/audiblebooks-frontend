@@ -380,7 +380,7 @@ const SidebarPlayer = ({ audiobook, onClose, userType }) => {
           <h2 className="text-2xl font-bold mb-2 text-black">
             {audiobook?.title}
           </h2>
-          <p className="text-white text-sm">
+          <p className="text-black text-sm">
             By{" "}
             <span className="text-blue-300 bg-black p-1 rounded px-2">
               {audiobook?.authorName}
@@ -638,7 +638,7 @@ const SidebarPlayer = ({ audiobook, onClose, userType }) => {
                 />
               </div>
               <textarea
-                className={`${styles.reviewInput} w-full p-2 mt-1 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm`} // Increased padding and text size, change text color to black for better readability
+                className={`${styles.reviewInput} w-full p-2 mt-1 border border-gray-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400 text-sm`} // Increased padding and text size, change text color to black for better readability
                 placeholder="Write a review..."
                 value={reviewText}
                 onChange={(e) => setReviewText(e.target.value)}
